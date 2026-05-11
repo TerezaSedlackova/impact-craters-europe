@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ crater.name }}</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>{{ crater.name }}</h1>
+        <p><strong>Lokace:</strong> {{ crater.location }}</p>
+        <p><strong>Průměr:</strong> {{ crater.diameter_km }} km</p>
+        <p><strong>Stáří:</strong> {{ crater.age_million_years }} milionů let</p>
+        <p><strong>Cílová hornina:</strong> {{ crater.target_rock }}</p>
+        <p><strong>Typ bolidu:</strong> {{ crater.bolide_type }}</p>
+
+        <a href="/">← Zpět na seznam</a>
+    </div>
+</body>
+</html>

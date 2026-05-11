@@ -1,0 +1,177 @@
+
+/* Světlý režim */
+body {
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+body .crater-list li,
+body .crater-item {
+    background: white;
+    border-color: #ccc;
+}
+
+body input {
+    background-color: white;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+body a {
+    color: #007bff;
+}
+
+/* Tmavý režim */
+body.dark-mode {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+}
+
+body.dark-mode .crater-list li,
+body.dark-mode .crater-item {
+    background: #2c2c2c;
+    border-color: #444;
+}
+
+body.dark-mode input {
+    background-color: #333;
+    color: #eee;
+    border: 1px solid #555;
+}
+
+body.dark-mode a {
+    color: #4f8cff;
+}
+
+/* Nadpisy */
+body.dark-mode h1,
+body.dark-mode .map-heading {
+    text-align: center;
+    color: #ffffff;
+}
+
+/* Nadpisy */
+body h1, .map-heading {
+    text-align: center;
+    color: #333;
+}
+
+/* Přepínač motivu */
+.theme-toggle {
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+
+/* Kontejner */
+.container {
+    width: 85%;
+    margin: auto;
+    padding: 20px;
+}
+
+
+.map-heading {
+    margin-top: 40px;
+    font-size: 1.5em;
+}
+
+/* Seznam kráterů */
+.crater-list {
+    list-style: none;
+    padding: 0;
+}
+
+.crater-list li {
+    background: #2c2c2c;
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s;
+}
+
+.crater-list li:hover {
+    transform: scale(1.02);
+    cursor: pointer;
+}
+
+/* Jednotlivý kráter */
+.crater-item {
+    background-color: #2c2c2c;
+    border: 1px solid #444;
+    border-radius: 8px;
+    padding: 15px 20px;
+    margin-bottom: 12px;
+}
+
+/* Tlačítka */
+button.toggle-btn {
+    background-color: #4f8cff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background-color 0.2s ease;
+}
+
+button.toggle-btn:hover {
+    background-color: #2d6be6;
+}
+
+/* Detaily kráteru */
+.crater-details {
+    display: none;
+    padding-top: 10px;
+}
+
+.crater-details li {
+    margin: 5px 0;
+}
+
+/* Filtr */
+.filter-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+input[type="text"],
+input[type="number"] {
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #555;
+    border-radius: 5px;
+}
+
+body.dark-mode input[type="text"],
+body.dark-mode input[type="number"] {
+    background-color: #333;
+    color: #eee;
+}
+
+/* Odkazy */
+a {
+    text-decoration: none;
+    color: #4f8cff;
+    font-weight: bold;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Mapa */
+#map {
+    height: 300px;
+    width: 80%;
+    margin: 20px auto;
+    border: 2px solid #444;
+    border-radius: 10px;
+}
+
+
+
