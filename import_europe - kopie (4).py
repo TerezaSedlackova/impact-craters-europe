@@ -1,22 +1,17 @@
 import csv
 import re
 from sqlalchemy.orm import Session
-from database import SessionLocal
-from models import ImpactsEurope
+from database import SessionLocal, ImpactsEurope
 
 def clean_coord(coord_str):
-    """
-    Převede souřadnice typu 'N 48° 45\'' na desetinné číslo (48.75).
-    """
-    if not coord_str or str(coord_str).lower() == "nan":
+    if not coord_str or coord_str == "nan":
         return 0.0
     try:
-        # Najde všechna čísla v řetězci (stupně a minuty)
-        parts = re.findall(r'\d+', str(coord_str))
+        # Hledá čísla v řetězci (stupně a minuty)
+        parts = re.findall(r'\d+', coord_str)
         if len(parts) >= 2:
             degrees = float(parts[0])
             minutes = float(parts[1])
-            # Přepočet: stupně + (minuty / 60)
             decimal = degrees + (minutes / 60.0)
             return round(decimal, 4)
         elif len(parts) == 1:
@@ -28,27 +23,20 @@ def clean_coord(coord_str):
 def import_european_craters():
     db: Session = SessionLocal()
     try:
-        # Ujistěte se, že soubor impacts_europe.csv je v hlavním adresáři
         with open("impacts_europe.csv", encoding="utf-8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 lat = clean_coord(row["latitude"])
                 lon = clean_coord(row["longitude"])
                 
-                # Kontrola, zda kráter již v databázi existuje
-                existing = db.query(ImpactsEurope).filter(
-                    ImpactsEurope.crater_name == row["crater_name"]
-                ).first()
-
+                existing = db.query(ImpactsEurope).filter(ImpactsEurope.crater_name == row["crater_name"]).first()
+                
                 if existing:
-                    # AKTUALIZACE: Pokud existuje, přepíšeme staré souřadnice a data
+                    # Dočasná aktualizace: přepsání souřadnic u nalezeného záznamu
                     existing.latitude = lat
                     existing.longitude = lon
-                    existing.location = row["location"]
-                    existing.diameter_km = float(row["diameter_km"]) if row["diameter_km"] else 0.0
-                    existing.age_million_years = float(row["age_million_years"]) if row["age_million_years"] else 0.0
                 else:
-                    # NOVÝ ZÁZNAM: Pokud neexistuje, vytvoříme ho
+                    # Vytvoření nového záznamu, pokud neexistuje
                     new_crater = ImpactsEurope(
                         crater_name=row["crater_name"],
                         location=row["location"],
@@ -62,11 +50,9 @@ def import_european_craters():
                         bolide_type=row["bolide_type"]
                     )
                     db.add(new_crater)
-                    
         db.commit()
-        print("✅ Evropské krátery byly úspěšně importovány/aktualizovány!")
+        print("✅ Import dokončen.")
     except Exception as e:
-        db.rollback()
         print(f"❌ Chyba při importu: {e}")
     finally:
         db.close()

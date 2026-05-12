@@ -5,19 +5,17 @@ from fastapi.templating import Jinja2Templates
 from sqlalchemy.orm import Session
 import os
 
-from database import engine, SessionLocal, Base
-from models import ImpactsEurope
+from database import engine, SessionLocal, Base, ImpactsEurope
 from import_europe import import_european_craters
 
-# Vytvoření databázových tabulek
+# Vytvoření databázových tabulek (pokud neexistují)
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Připojení statických souborů
+# Připojení statických souborů a šablon
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Mountování složky s obrázky, pokud existuje
+# Pokud máte obrázky v samostatné složce 'images'
 if os.path.exists("images"):
     app.mount("/images", StaticFiles(directory="images"), name="images")
 
@@ -33,16 +31,16 @@ def get_db():
 
 @app.on_event("startup")
 def startup_event():
-    # Automatická oprava a import dat při startu
-    print("Inicializace databáze a kontrola souřadnic...")
+    # Automatický import dat při startu aplikace
+    print("Spouštím automatický import dat...")
     import_european_craters()
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index(request: Request, db: Session = Depends(get_db)):
-    # Načtení objektů z DB
+    # Načtení všech kráterů z databáze
     craters = db.query(ImpactsEurope).all()
     
-    # Odeslání dat do šablony
+    # Předání seznamu objektů do šablony index.html
     return templates.TemplateResponse(
         "index.html", 
         {"request": request, "craters": craters}

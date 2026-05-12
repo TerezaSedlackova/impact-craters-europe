@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seznam impaktních kráterů v Evropě</title>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+
+   <script src="/static/script.js"></script>
+
+</head>
+<body>
+
+    <h2 class="map-heading">Mapa impaktních kráterů</h2>
+    <div id="map" style="height: 500px; margin-bottom: 30px;"></div>
+    <link rel="stylesheet" href="/static/styles.css">
+
+
+    <div class="container">
+        <h1>Seznam impaktních kráterů v Evropě</h1>
+        <div class="theme-toggle">
+    <label>
+        <input type="checkbox" id="themeSwitch">
+        Přepnout na tmavý režim
+    </label>
+    </div>
+
+        <!-- 🔍 Vyhledávací pole -->
+        <input type="text" id="search" onkeyup="filterCraters()" placeholder="Hledat kráter..." />
+
+        <!-- Country -->
+        <input type="text" id="searchCountry" onkeyup="filterCraters()" placeholder="Hledat dle místa..." />
+
+        <!-- Diameter -->
+        <h3>Velikost kráteru</h3>
+        <input type="number" id="minDiameter" onkeyup="filterCraters()" placeholder="Minimální poloměr" />
+        <input type="number" id="maxDiameter" onkeyup="filterCraters()" placeholder="Maximální poloměr" />
+
+        <!-- Diameter -->
+        <h3>Stáří kráteru</h3>
+        <input type="number" id="minAge" onkeyup="filterCraters()" placeholder="Minimální stáří (Ma)" />
+        <input type="number" id="maxAge" onkeyup="filterCraters()" placeholder="Maximální stáří (Ma)" />
+
+        <ul class="crater-list">
+            {% for crater in craters %}
+                <li class="crater-item">
+                    {% set crater_name = next(crater)[1]|replace('"', '') %}
+                    <button class="toggle-btn">{{ crater_name }}</button>
+                    <div style="display: none;">
+                        <ul style="display:grid; width: 60%;">
+                            {% for pair in crater %}
+                                {% set key = pair[0] %}
+                                {% set value = pair[1]|replace('"', '') %}
+                                {% if key != 'crater_name' %}
+                                	<li>
+                                    		{% if key == 'latitude' %}
+                                        		Latitude : {{ value }}
+                                    		{% elif key == 'longitude' %}
+                                        		Longitude : {{ value }}
+                                    		{% elif key == 'diameter_km' %}
+                                        		Diameter (km) : {{ value }}
+                                    		{% elif key == 'age_ma' or key == 'age_million_years' %}
+                                        		Age (Ma) : {{ value }}
+                                    		{% elif key != 'crater_name' %}
+                                        		{{ key.replace('_', ' ').title() }} : {{ value }}
+                                    		{% endif %}
+                                	</li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                        <img src={{ "/images/" ~ crater_name|lower() ~ ".jpg" }} style="float: right; height: 100%; width: 40%;"
+                            alt="{{ "Obrázek kráteru " ~ crater_name }}">
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    <a href="http://www.passc.net/EarthImpactDatabase/New%20website_05-2018/Index.html">
+	Zdroj impaktních kráterů
+    </a>
+	<!-- Dovnitř titul článku -->
+    <h3> </h3>
+	<!-- Dovnitř text článku -->
+    <div> </div>
+    </div>
+    
+</body>
+</html>
