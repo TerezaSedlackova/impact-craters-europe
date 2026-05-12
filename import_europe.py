@@ -28,34 +28,37 @@ def clean_coord(coord_str):
 def import_european_craters():
     db: Session = SessionLocal()
     try:
-        # Ujistěte se, že soubor impacts_europe.csv je v hlavním adresáři
+        # Ujistěte se, že soubor impacts_europe.csv je v hlavním adresáři projektu
         with open("impacts_europe.csv", encoding="utf-8") as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
                 lat = clean_coord(row["latitude"])
                 lon = clean_coord(row["longitude"])
                 
-                # Kontrola, zda kráter již v databázi existuje
+                # Kontrola, zda kráter již v databázi existuje podle jména
                 existing = db.query(ImpactsEurope).filter(
                     ImpactsEurope.crater_name == row["crater_name"]
                 ).first()
 
+                # Získání hodnoty věku ze správného sloupce 'age_ma'
+                age_val = float(row["age_ma"]) if row.get("age_ma") else 0.0
+
                 if existing:
-                    # AKTUALIZACE: Pokud existuje, přepíšeme staré souřadnice a data
+                    # AKTUALIZACE: Přepsání starých dat novými (včetně opravy souřadnic)
                     existing.latitude = lat
                     existing.longitude = lon
                     existing.location = row["location"]
                     existing.diameter_km = float(row["diameter_km"]) if row["diameter_km"] else 0.0
-                    existing.age_million_years = float(row["age_million_years"]) if row["age_million_years"] else 0.0
+                    existing.age_million_years = age_val
                 else:
-                    # NOVÝ ZÁZNAM: Pokud neexistuje, vytvoříme ho
+                    # NOVÝ ZÁZNAM: Pokud v databázi ještě není
                     new_crater = ImpactsEurope(
                         crater_name=row["crater_name"],
                         location=row["location"],
                         latitude=lat,
                         longitude=lon,
                         diameter_km=float(row["diameter_km"]) if row["diameter_km"] else 0.0,
-                        age_million_years=float(row["age_million_years"]) if row["age_million_years"] else 0.0,
+                        age_million_years=age_val,
                         exposed=row["exposed"],
                         drilled=row["drilled"],
                         target_rock=row["target_rock"],
