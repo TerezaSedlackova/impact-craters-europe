@@ -23,7 +23,7 @@ if os.path.exists("images"):
 
 templates = Jinja2Templates(directory="templates")
 
-# Mapovací slovník zdrojů obrázků na základě poskytnutých dat
+# Slovník zdrojů z dodaného dokumentu
 IMAGE_SOURCES = {
     "boltysh": {"name": "Wikipedia", "url": "https://cs.wikipedia.org/wiki/Bolty%C5%A1"},
     "dellen": {"name": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Dellen"},
@@ -75,10 +75,9 @@ def startup_event():
 
 @app.get("/", response_class=HTMLResponse)
 async def read_index(request: Request, db: Session = Depends(get_db)):
-    # Načtení objektů z DB
     craters = db.query(ImpactsEurope).all()
     
-    # Dynamické doplnění atributů zdrojů pro každý kráter před renderingem
+    # Čisté přiřazení proměnných pro šablonu
     for crater in craters:
         key = crater.crater_name.lower().strip() if crater.crater_name else ""
         if key in IMAGE_SOURCES:
@@ -88,7 +87,6 @@ async def read_index(request: Request, db: Session = Depends(get_db)):
             crater.image_source = None
             crater.image_source_url = None
             
-    # Odeslání dat do šablony
     return templates.TemplateResponse(
         "index.html", 
         {"request": request, "craters": craters}
