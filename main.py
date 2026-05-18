@@ -23,7 +23,7 @@ if os.path.exists("images"):
 
 templates = Jinja2Templates(directory="templates")
 
-# Slovník zdrojů z dodaného dokumentu
+# Mapovací slovník zdrojů obrázků
 IMAGE_SOURCES = {
     "boltysh": {"name": "Wikipedia", "url": "https://cs.wikipedia.org/wiki/Bolty%C5%A1"},
     "dellen": {"name": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Dellen"},
@@ -60,6 +60,32 @@ IMAGE_SOURCES = {
     "kamensk": {"name": "Iskatel", "url": "https://iskatel.com/places/dlinnyy-kanon"}
 }
 
+# Překladové slovníky pro backend
+LOCATION_TRANSLATIONS = {
+    "ukraine": "Ukrajina",
+    "sweden": "Švédsko",
+    "finland": "Finsko",
+    "estonia": "Estonsko",
+    "norway": "Norsko",
+    "germany": "Německo",
+    "france": "Francie",
+    "russia": "Rusko",
+    "latvia": "Lotyšsko",
+    "lithuania": "Litva",
+    "poland": "Polsko",
+    "belarus": "Bělorusko"
+}
+
+BOLIDE_TRANSLATIONS = {
+    "stone": "Kamenné těleso",
+    "stony": "Kamenné těleso",
+    "octahedrite fragments": "Fragmenty oktaedritu",
+    "achondrite": "Achondrit",
+    "stony-iron": "Kamenoželezné těleso",
+    "iron": "Železné těleso",
+    "chondrite": "Chondrit"
+}
+
 # Dependency pro získání DB session
 def get_db():
     db = SessionLocal()
@@ -77,8 +103,8 @@ def startup_event():
 async def read_index(request: Request, db: Session = Depends(get_db)):
     craters = db.query(ImpactsEurope).all()
     
-    # Čisté přiřazení proměnných pro šablonu
     for crater in craters:
+        # Mapování zdrojů obrázků
         key = crater.crater_name.lower().strip() if crater.crater_name else ""
         if key in IMAGE_SOURCES:
             crater.image_source = IMAGE_SOURCES[key]["name"]
@@ -86,6 +112,24 @@ async def read_index(request: Request, db: Session = Depends(get_db)):
         else:
             crater.image_source = None
             crater.image_source_url = None
+
+        # Překlad lokality (ošetření otazníků)
+        if crater.location:
+            loc_raw = crater.location.lower().strip()
+            has_question = "?" in loc_raw
+            loc_key = loc_raw.replace("?", "").strip()
+            
+            if loc_key in LOCATION_TRANSLATIONS:
+                crater.location = LOCATION_TRANSLATIONS[loc_key] + ("?" if has_question else "")
+
+        # Překlad typu dopadového tělesa (ošetření otazníků)
+        if crater.bolide_type:
+            bol_raw = crater.bolide_type.lower().strip()
+            has_question = "?" in bol_raw
+            bol_key = bol_raw.replace("?", "").strip()
+            
+            if bol_key in BOLIDE_TRANSLATIONS:
+                crater.bolide_type = BOLIDE_TRANSLATIONS[bol_key] + ("?" if has_question else "")
             
     return templates.TemplateResponse(
         "index.html", 
