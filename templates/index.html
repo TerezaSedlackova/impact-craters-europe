@@ -46,8 +46,10 @@
         <ul class="crater-list" id="craterList">
             {% for crater in craters %}
                 <li class="crater-item">
-                    <button class="toggle-btn" onclick="vlastniToggleDetaily(this); return false;">{{ crater.crater_name }}</button>
-                    <div class="crater-details" style="display: none; padding: 15px; border-top: 1px solid #eee;">
+                    <button class="custom-toggle-link" data-target="details-{{ loop.index }}" onclick="vlastniOtevreniDetailu(this); return false;">
+                        {{ crater.crater_name }}
+                    </button>
+                    <div id="details-{{ loop.index }}" style="display: none; padding: 15px; border-top: 1px solid #eee;">
                         <div style="display: flex; justify-content: space-between; align-items: start;">
                             <ul style="list-style: none; padding: 0; margin: 0; flex: 1;">
                                 <li><strong>Lokalita:</strong> {{ crater.location }}</li>
@@ -106,14 +108,15 @@
         {% endif %}
         {% endfor %}
 
-        // Izolovaná funkce, která nepoužívá posluchače událostí a natvrdo přepíná styl
-        function vlastniToggleDetaily(btn) {
-            var details = btn.nextElementSibling;
-            if (details) {
-                if (details.style.display === "none" || details.style.display === "") {
-                    details.style.setProperties ? details.style.setProperties("display", "block", "important") : details.style.display = "block";
+        // Absolutně izolovaná funkce adresující prvek přímo pomocí unikátního ID atributu
+        function vlastniOtevreniDetailu(element) {
+            var targetId = element.getAttribute('data-target');
+            var targetDiv = document.getElementById(targetId);
+            if (targetDiv) {
+                if (targetDiv.style.getPropertyValue("display") === "none" || targetDiv.style.display === "none" || targetDiv.style.display === "") {
+                    targetDiv.style.setProperty("display", "block", "important");
                 } else {
-                    details.style.setProperties ? details.style.setProperties("display", "none", "important") : details.style.display = "none";
+                    targetDiv.style.setProperty("display", "none", "important");
                 }
             }
         }
