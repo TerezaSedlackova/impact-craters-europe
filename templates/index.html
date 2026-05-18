@@ -46,7 +46,7 @@
         <ul class="crater-list" id="craterList">
             {% for crater in craters %}
                 <li class="crater-item">
-                    <button class="toggle-btn">{{ crater.crater_name }}</button>
+                    <button class="toggle-btn" onclick="vlastniToggleDetaily(this); return false;">{{ crater.crater_name }}</button>
                     <div class="crater-details" style="display: none; padding: 15px; border-top: 1px solid #eee;">
                         <div style="display: flex; justify-content: space-between; align-items: start;">
                             <ul style="list-style: none; padding: 0; margin: 0; flex: 1;">
@@ -106,19 +106,17 @@
         {% endif %}
         {% endfor %}
 
-        // Bezpečné navázání událostí až po úplném načtení DOM stromu
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.toggle-btn').forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    var details = this.nextElementSibling;
-                    if (details.style.display === "none" || details.style.display === "") {
-                        details.style.display = "block";
-                    } else {
-                        details.style.display = "none";
-                    }
-                });
-            });
-        });
+        // Izolovaná funkce, která nepoužívá posluchače událostí a natvrdo přepíná styl
+        function vlastniToggleDetaily(btn) {
+            var details = btn.nextElementSibling;
+            if (details) {
+                if (details.style.display === "none" || details.style.display === "") {
+                    details.style.setProperties ? details.style.setProperties("display", "block", "important") : details.style.display = "block";
+                } else {
+                    details.style.setProperties ? details.style.setProperties("display", "none", "important") : details.style.display = "none";
+                }
+            }
+        }
 
         function filterCraters() {
             var sName = document.getElementById('search').value.toLowerCase().trim();
