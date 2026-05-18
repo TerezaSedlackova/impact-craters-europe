@@ -46,10 +46,11 @@
         <ul class="crater-list" id="craterList">
             {% for crater in craters %}
                 <li class="crater-item">
-                    <button class="custom-toggle-link" data-target="details-{{ loop.index }}" onclick="vlastniOtevreniDetailu(this); return false;">
+                    <div class="custom-crater-title" onclick="vlastniOtevreniDetailu('details-{{ loop.index }}')" style="padding: 10px; font-weight: bold; cursor: pointer; background: #eee; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 2px;">
                         {{ crater.crater_name }}
-                    </button>
-                    <div id="details-{{ loop.index }}" style="display: none; padding: 15px; border-top: 1px solid #eee;">
+                    </div>
+                    
+                    <div id="details-{{ loop.index }}" style="display: none; padding: 15px; border: 1px solid #ccc; border-top: none; background: #f9f9f9; border-radius: 0 0 4px 4px; margin-bottom: 10px;">
                         <div style="display: flex; justify-content: space-between; align-items: start;">
                             <ul style="list-style: none; padding: 0; margin: 0; flex: 1;">
                                 <li><strong>Lokalita:</strong> {{ crater.location }}</li>
@@ -108,15 +109,14 @@
         {% endif %}
         {% endfor %}
 
-        // Absolutně izolovaná funkce adresující prvek přímo pomocí unikátního ID atributu
-        function vlastniOtevreniDetailu(element) {
-            var targetId = element.getAttribute('data-target');
-            var targetDiv = document.getElementById(targetId);
+        // Čistá, izolovaná funkce adresující skrytý element napřímo přes jeho ID
+        function vlastniOtevreniDetailu(id) {
+            var targetDiv = document.getElementById(id);
             if (targetDiv) {
-                if (targetDiv.style.getPropertyValue("display") === "none" || targetDiv.style.display === "none" || targetDiv.style.display === "") {
-                    targetDiv.style.setProperty("display", "block", "important");
+                if (targetDiv.style.display === "none" || targetDiv.style.display === "") {
+                    targetDiv.style.display = "block";
                 } else {
-                    targetDiv.style.setProperty("display", "none", "important");
+                    targetDiv.style.display = "none";
                 }
             }
         }
