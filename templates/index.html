@@ -34,17 +34,28 @@
         <h2 class="map-heading">Mapa impaktních kráterů</h2>
         <div id="map" style="height: 500px; margin-bottom: 30px; border-radius: 8px; border: 1px solid #ccc;"></div>
 
-        <div class="filters">
-            <input type="text" id="search" onkeyup="filterCraters()" placeholder="Hledat kráter..." />
-            <input type="text" id="searchCountry" onkeyup="filterCraters()" placeholder="Hledat dle místa..." />
-            
-            <h3>Velikost kráteru (km)</h3>
-            <input type="number" id="minDiameter" onkeyup="filterCraters()" placeholder="Minimální" />
-            <input type="number" id="maxDiameter" onkeyup="filterCraters()" placeholder="Maximální" />
+        <div class="filter-section-container" style="display: flex; gap: 30px; margin-bottom: 30px; align-items: start;">
+            <div class="filters" style="flex: 1; margin-bottom: 0;">
+                <input type="text" id="search" onkeyup="filterCraters()" placeholder="Hledat kráter..." />
+                <input type="text" id="searchCountry" onkeyup="filterCraters()" placeholder="Hledat dle místa..." />
+                
+                <h3>Velikost kráteru (km)</h3>
+                <input type="number" id="minDiameter" onkeyup="filterCraters()" placeholder="Minimální" />
+                <input type="number" id="maxDiameter" onkeyup="filterCraters()" placeholder="Maximální" />
 
-            <h3>Stáří kráteru (Ma)</h3>
-            <input type="number" id="minAge" onkeyup="filterCraters()" placeholder="Minimální" />
-            <input type="number" id="maxAge" onkeyup="filterCraters()" placeholder="Maximální" />
+                <h3>Stáří kráteru (Ma)</h3>
+                <input type="number" id="minAge" onkeyup="filterCraters()" placeholder="Minimální" />
+                <input type="number" id="maxAge" onkeyup="filterCraters()" placeholder="Maximální" />
+            </div>
+
+            <div class="legend-box" style="flex: 1; padding: 20px; background: #f9f9f9; border: 1px solid #ccc; border-radius: 4px; font-size: 0.95em; color: #333; line-height: 1.5;">
+                <h3 style="margin-top: 0; margin-bottom: 12px; border-bottom: 1px solid #ccc; padding-bottom: 5px;">Typy cílových hornin</h3>
+                <ul style="list-style: none; padding: 0; margin: 0;">
+                    <li style="margin-bottom: 8px;"><strong>C (Crystalline)</strong> – Krystalické horniny (vyvřelé a přeměněné horniny, např. žula, rula).</li>
+                    <li style="margin-bottom: 8px;"><strong>S (Sedimentary)</strong> – Sedimentární horniny (usazené horniny, např. vápenec, pískovec, břidlice).</li>
+                    <li><strong>M (Marine)</strong> – Mořské prostředí / smíšené svrchní vrstvy (dopad do vody nebo tenké vrstvy sedimentů na krystalickém podkladu).</li>
+                </ul>
+            </div>
         </div>
 
         <ul class="crater-list" id="craterList">
