@@ -4,87 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seznam impaktních kráterů v Evropě</title>
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-     crossorigin=""/>
-
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-     crossorigin=""></script>
-
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
-
     <div class="container">
         <h1>Seznam impaktních kráterů v Evropě</h1>
         
-        <div class="theme-toggle">
-            <label>
-                <input type="checkbox" id="themeSwitch">
-                Přepnout na tmavý režim
-            </label>
-        </div>
-
-        <h2 class="map-heading">Mapa impaktních kráterů</h2>
-        <div id="map" style="height: 500px; margin-bottom: 30px; border-radius: 8px; border: 1px solid #ccc;"></div>
+        <div id="map" style="height: 500px; margin-bottom: 30px; border-radius: 8px;"></div>
 
         <div class="filters">
             <input type="text" id="search" onkeyup="filterCraters()" placeholder="Hledat kráter..." />
             <input type="text" id="searchCountry" onkeyup="filterCraters()" placeholder="Hledat dle místa..." />
             
-            <h3>Velikost kráteru (km)</h3>
-            <input type="number" id="minDiameter" onkeyup="filterCraters()" placeholder="Minimální" />
-            <input type="number" id="maxDiameter" onkeyup="filterCraters()" placeholder="Maximální" />
-
-            <h3>Stáří kráteru (Ma)</h3>
-            <input type="number" id="minAge" onkeyup="filterCraters()" placeholder="Minimální" />
-            <input type="number" id="maxAge" onkeyup="filterCraters()" placeholder="Maximální" />
+            <div class="numeric-filters">
+                <div>
+                    <h3>Průměr (km)</h3>
+                    <input type="number" id="minDiameter" onkeyup="filterCraters()" placeholder="Min">
+                    <input type="number" id="maxDiameter" onkeyup="filterCraters()" placeholder="Max">
+                </div>
+                <div>
+                    <h3>Stáří (Ma)</h3>
+                    <input type="number" id="minAge" onkeyup="filterCraters()" placeholder="Min">
+                    <input type="number" id="maxAge" onkeyup="filterCraters()" placeholder="Max">
+                </div>
+            </div>
         </div>
 
         <ul class="crater-list" id="craterList">
             {% for crater in craters %}
-                <li class="crater-item">
-                    <div class="custom-crater-title" onclick="vlastniOtevreniDetailu('details-{{ loop.index }}')" style="padding: 10px; font-weight: bold; cursor: pointer; background: #eee; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 2px;">
-                        {{ crater.crater_name }}
-                    </div>
-                    
-                    <div id="details-{{ loop.index }}" style="display: none; padding: 15px; border: 1px solid #ccc; border-top: none; background: #f9f9f9; border-radius: 0 0 4px 4px; margin-bottom: 10px;">
-                        <div style="display: flex; justify-content: space-between; align-items: start;">
-                            <ul style="list-style: none; padding: 0; margin: 0; flex: 1;">
-                                <li><strong>Lokalita:</strong> {{ crater.location }}</li>
-                                <li><strong>Souřadnice:</strong> {{ crater.latitude }}, {{ crater.longitude }}</li>
-                                <li><strong>Průměr:</strong> {{ crater.diameter_km }} km</li>
-                                <li><strong>Stáří:</strong> {{ crater.age_million_years }} Ma</li>
-                                <li><strong>Typ dopadového tělesa:</strong> {{ crater.bolide_type }}</li>
-                                <li><strong>Cílová hornina:</strong> {{ crater.target_rock }}</li>
-                            </ul>
+            <li class="crater-item">
+                <div class="custom-crater-title" onclick="vlastniOtevreniDetailu('details-{{ loop.index }}')" style="padding: 10px; font-weight: bold; cursor: pointer; background: #eee; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 2px;">
+                    {{ crater.crater_name }} ({{ crater.location }})
+                </div>
+                
+                <div id="details-{{ loop.index }}" style="display: none; padding: 15px; border: 1px solid #ccc; border-top: none; background: #f9f9f9; border-radius: 0 0 4px 4px; margin-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <ul style="list-style: none; padding: 0; margin: 0; flex: 1;">
+                            <li><strong>Lokalita:</strong> {{ crater.location }}</li>
+                            <li><strong>Souřadnice:</strong> {{ crater.latitude }}, {{ crater.longitude }}</li>
+                            <li><strong>Průměr:</strong> {{ crater.diameter_km }} km</li>
+                            <li><strong>Stáří:</strong> {{ crater.age_million_years }} Ma</li>
+                            <li><strong>Typ dopadového tělesa:</strong> {{ crater.bolide_type if crater.bolide_type else 'Neznámý' }}</li>
+                            <li><strong>Cílová hornina:</strong> {{ crater.target_rock if crater.target_rock else 'Neznámá' }}</li>
+                        </ul>
+                        
+                        <div class="image-container" style="max-width: 40%; margin-left: 20px; text-align: center;">
                             <img src="/images/{{ crater.crater_name|lower|replace(' ', '_') }}.jpg" 
-                                 style="max-width: 40%; height: auto; border-radius: 4px; margin-left: 20px;"
+                                 style="width: 100%; height: auto; border-radius: 4px;"
                                  alt="Obrázek kráteru {{ crater.crater_name }}"
-                                 onerror="this.style.display='none'">
+                                 onerror="this.parentNode.style.display='none'">
+                            
+                            {% if crater.image_source %}
+                                <p style="font-size: 0.75em; color: #666; margin-top: 5px; text-align: center; line-height: 1.2;">
+                                    Zdroj obrázku: <a href="{{ crater.image_source_url }}" target="_blank" style="color: #337ab7; text-decoration: underline;">{{ crater.image_source }}</a>
+                                </p>
+                            {% endif %}
                         </div>
                     </div>
-                </li>
+                </div>
+            </li>
             {% endfor %}
         </ul>
-
-        <p style="margin-top: 20px;">
-            <a href="http://www.passc.net/EarthImpactDatabase/New%20website_05-2018/Index.html" target="_blank">
-                Zdroj: Earth Impact Database
-            </a>
-        </p>
     </div>
 
-    <script src="/static/script.js"></script>
-    
     <script>
         var map = L.map('map').setView([50.0, 15.0], 4);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 
         var craterData = [];
         var items = document.querySelectorAll('.crater-item');
@@ -93,9 +80,8 @@
         {% if crater.latitude and crater.longitude %}
         (function() {
             var marker = L.marker([{{ crater.latitude }}, {{ crater.longitude }}])
-                .bindPopup("<b>{{ crater.crater_name }}</b><br>Lokalita: {{ crater.location }}<br>Průměr: {{ crater.diameter_km }} km");
-
-            marker.addTo(map);
+                .bindPopup("<b>{{ crater.crater_name }}</b><br>Průměr: {{ crater.diameter_km }} km")
+                .addTo(map);
 
             craterData.push({
                 marker: marker,
@@ -109,7 +95,6 @@
         {% endif %}
         {% endfor %}
 
-        // Čistá, izolovaná funkce adresující skrytý element napřímo přes jeho ID
         function vlastniOtevreniDetailu(id) {
             var targetDiv = document.getElementById(id);
             if (targetDiv) {
@@ -122,35 +107,29 @@
         }
 
         function filterCraters() {
-            var sName = document.getElementById('search').value.toLowerCase().trim();
-            var sLoc = document.getElementById('searchCountry').value.toLowerCase().trim();
-            
-            var minDRaw = document.getElementById('minDiameter').value;
-            var maxDRaw = document.getElementById('maxDiameter').value;
-            var minARaw = document.getElementById('minAge').value;
-            var maxARaw = document.getElementById('maxAge').value;
-
-            var minD = minDRaw !== "" ? parseFloat(minDRaw) : 0;
-            var maxD = maxDRaw !== "" ? parseFloat(maxDRaw) : Infinity;
-            var minA = minARaw !== "" ? parseFloat(minARaw) : 0;
-            var maxA = maxARaw !== "" ? parseFloat(maxARaw) : Infinity;
+            var sName = document.getElementById('search').value.toLowerCase();
+            var sLoc = document.getElementById('searchCountry').value.toLowerCase();
+            var minD = parseFloat(document.getElementById('minDiameter').value) || 0;
+            var maxD = parseFloat(document.getElementById('maxDiameter').value) || 999999;
+            var minA = parseFloat(document.getElementById('minAge').value) || 0;
+            var maxA = parseFloat(document.getElementById('maxAge').value) || 999999;
 
             craterData.forEach(function(item) {
-                var nameMatch = item.name.startsWith(sName);
-                var locMatch = item.location.includes(sLoc);
-                var diaMatch = item.diameter >= minD && item.diameter <= maxD;
-                var ageMatch = item.age >= minA && item.age <= maxA;
+                var match = item.name.includes(sName) &&
+                            item.location.includes(sLoc) &&
+                            item.diameter >= minD && item.diameter <= maxD &&
+                            item.age >= minA && item.age <= maxA;
 
-                if (nameMatch && locMatch && diaMatch && ageMatch) {
-                    item.element.style.display = "";
+                if (match) {
                     if (!map.hasLayer(item.marker)) {
                         item.marker.addTo(map);
                     }
+                    item.element.style.display = "";
                 } else {
-                    item.element.style.display = "none";
                     if (map.hasLayer(item.marker)) {
                         map.removeLayer(item.marker);
                     }
+                    item.element.style.display = "none";
                 }
             });
         }
