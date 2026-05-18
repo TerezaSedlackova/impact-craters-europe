@@ -46,7 +46,7 @@
         <ul class="crater-list" id="craterList">
             {% for crater in craters %}
                 <li class="crater-item">
-                    <button class="toggle-btn" onclick="toggleDetails(this)">{{ crater.crater_name }}</button>
+                    <button class="toggle-btn">{{ crater.crater_name }}</button>
                     <div class="crater-details" style="display: none; padding: 15px; border-top: 1px solid #eee;">
                         <div style="display: flex; justify-content: space-between; align-items: start;">
                             <ul style="list-style: none; padding: 0; margin: 0; flex: 1;">
@@ -77,10 +77,8 @@
     <script src="/static/script.js"></script>
     
     <script>
-        // Inicializace mapy a nastavení výchozího pohledu na Evropu
         var map = L.map('map').setView([50.0, 15.0], 4);
 
-        // Přidání mapových podkladů OpenStreetMap
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
@@ -88,7 +86,6 @@
         var craterData = [];
         var items = document.querySelectorAll('.crater-item');
 
-        // Spojení mapových markerů s daty pro filtry
         {% for crater in craters %}
         {% if crater.latitude and crater.longitude %}
         (function() {
@@ -109,17 +106,18 @@
         {% endif %}
         {% endfor %}
 
-        // Bezpečné rozklikávání detailů přímo ve stránce
-        function toggleDetails(btn) {
-            var details = btn.nextElementSibling;
-            if (details.style.display === "none" || details.style.display === "") {
-                details.style.display = "block";
-            } else {
-                details.style.display = "none";
-            }
-        }
+        // Explicitní inicializace rozklikávání vázaná přímo na vygenerované elementy
+        document.querySelectorAll('.toggle-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var details = this.nextElementSibling;
+                if (details.style.display === "none" || details.style.display === "") {
+                    details.style.display = "block";
+                } else {
+                    details.style.display = "none";
+                }
+            });
+        });
 
-        // Kompletní kombinovaný filtr (Text + Čísla + Reset při prázdných polích)
         function filterCraters() {
             var sName = document.getElementById('search').value.toLowerCase().trim();
             var sLoc = document.getElementById('searchCountry').value.toLowerCase().trim();
@@ -135,7 +133,6 @@
             var maxA = maxARaw !== "" ? parseFloat(maxARaw) : Infinity;
 
             craterData.forEach(function(item) {
-                // Striktní hledání podle jména od začátku slova
                 var nameMatch = item.name.startsWith(sName);
                 var locMatch = item.location.includes(sLoc);
                 var diaMatch = item.diameter >= minD && item.diameter <= maxD;
