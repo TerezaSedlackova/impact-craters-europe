@@ -115,8 +115,19 @@
         {% for crater in craters %}
         {% if crater.latitude and crater.longitude %}
         (function() {
-            var marker = L.marker([{{ crater.latitude }}, {{ crater.longitude }}])
-                .bindPopup("<b>{{ crater.crater_name }}</b><br>Lokalita: {{ crater.location }}<br>Průměr: {{ crater.diameter_km }} km");
+            var diameter = parseFloat("{{ crater.diameter_km }}") || 0.0;
+            
+            // Logaritmické škálování velikosti markeru: základní velikost je 5px + závislost na průměru
+            var markerRadius = 5 + (Math.log1p(diameter) * 3);
+
+            var marker = L.circleMarker([{{ crater.latitude }}, {{ crater.longitude }}], {
+                radius: markerRadius,
+                fillColor: "#ff3333",
+                color: "#000",
+                weight: 1,
+                opacity: 1,
+                fillOpacity: 0.6
+            }).bindPopup("<b>{{ crater.crater_name }}</b><br>Lokalita: {{ crater.location }}<br>Průměr: " + diameter + " km");
 
             marker.addTo(map);
 
@@ -124,7 +135,7 @@
                 marker: marker,
                 name: "{{ crater.crater_name|lower }}",
                 location: "{{ crater.location|lower }}",
-                diameter: parseFloat("{{ crater.diameter_km }}") || 0.0,
+                diameter: diameter,
                 age: parseFloat("{{ crater.age_million_years }}") || 0.0,
                 element: items[{{ loop.index0 }}]
             });
